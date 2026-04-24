@@ -83,7 +83,7 @@ export function initMap() {
     attribution: "Tiles &copy; Esri"
   });
 
-  lightLayer.addTo(map);
+  satelliteLayer.addTo(map);
 
   clusterLayer = L.markerClusterGroup({
     disableClusteringAtZoom: 16,
