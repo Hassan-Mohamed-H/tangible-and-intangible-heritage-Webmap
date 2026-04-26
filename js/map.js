@@ -105,7 +105,36 @@ export function initMap() {
       addMeasurePoint(e.latlng);
     }
   });
+  function updateLabels() {
+    const zoom = map.getZoom();
 
+    clusterLayer.eachLayer(layer => {
+      if (!(layer instanceof L.Marker)) return;
+
+      const el = layer.getElement();
+      if (!el) return;
+
+      const label = el.querySelector(".marker-label");
+      if (!label) return;
+
+      const isClustered = layer.__parent;
+
+      if (zoom >= 6) {
+        label.style.display = "block";
+      } else {
+        label.style.display = "none";
+      }
+    });
+  }
+
+  // ربط الأحداث (مهم جدًا)
+  map.on("zoomend moveend", updateLabels);
+
+  clusterLayer.on("animationend", updateLabels);
+  clusterLayer.on("spiderfied", updateLabels);
+  clusterLayer.on("unspiderfied", updateLabels);
+  clusterLayer.on("layeradd", updateLabels);
+    
   return map;
 }
 
@@ -121,16 +150,22 @@ export function setMarkers(data, layerVisibility = { tangible: true, intangible:
     if (item.heritageType !== "intangible" && !layerVisibility.tangible) return;
 
     const icon = L.divIcon({
-      html: createMarkerHtml(item.category),
-      className: "",
-      iconSize: [24, 24],
-      iconAnchor: [12, 12]
+      className: "custom-marker",
+      html: `
+        <div class="marker-wrapper">
+          <div class="marker-dot ${item.heritageType === "intangible" ? "intangible" : "tangible"}"></div>
+          <div class="marker-label">${item.name || "موقع تراثي"}</div>
+        </div>
+      `,
+      iconSize: [140, 50],
+      iconAnchor: [70, 50]
     });
 
     const marker = L.marker([item.lat, item.lng], {
       icon,
       title: item.name || "موقع تراثي"
-    });
+        });
+
 
     marker.on("click", () => {
       if (!routingMode) return;
@@ -153,6 +188,9 @@ export function setMarkers(data, layerVisibility = { tangible: true, intangible:
     },
     null
   );
+  setTimeout(() => {
+    map.fire("zoomend");
+  }, 0);
 }
 
 export function focusOnItem(item, options = {}) {
@@ -478,7 +516,7 @@ function drawRoadRoute(latLngs) {
 }
 
 function applyMarkerHighlight(marker) {
-  const markerEl = marker.getElement()?.querySelector(".custom-marker") || marker.getElement();
+  const markerEl = marker.getElement()?.querySelector(".marker-wrapper");
   if (!markerEl) return;
   if (activeMarkerHighlightEl) activeMarkerHighlightEl.classList.remove("marker-highlight");
   if (activeMarkerHighlightTimer) window.clearTimeout(activeMarkerHighlightTimer);

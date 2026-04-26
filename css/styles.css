@@ -783,21 +783,8 @@ body.dark-mode .routing-metric-card {
   color: var(--muted);
 }
 
-.custom-marker {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  border: 2px solid #fff;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
-  display: grid;
-  place-items: center;
-  font-size: 11px;
-}
 
-.marker-highlight {
-  animation: markerPulse 0.9s ease-in-out 2;
-  box-shadow: 0 0 0 6px rgba(14, 165, 233, 0.22), 0 0 0 1px rgba(0, 0, 0, 0.35);
-}
+
 
 @keyframes markerPulse {
   0% {
@@ -854,4 +841,164 @@ body.dark-mode .dashboard canvas {
     top: 66px;
     right: 10px;
   }
+}
+
+/* ===== Google Maps Style Marker ===== */
+
+.custom-marker {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.marker-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* النقطة */
+.marker-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 0 4px rgba(0,0,0,0.4);
+}
+
+/* مادي */
+.marker-dot.tangible {
+  background: #e53935;
+}
+
+/* لا مادي */
+.marker-dot.intangible {
+  background: #1e88e5;
+}
+
+/* الاسم */
+.marker-label {
+  margin-top: 4px;
+  background: rgba(255,255,255,0.9);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #222;
+  white-space: nowrap;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+
+/* 🔥 إلغاء الشكل الافتراضي نهائي */
+.leaflet-div-icon {
+  background: transparent !important;
+  border: none !important;
+}
+
+/* ===== Marker Wrapper ===== */
+.custom-marker {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.marker-highlight {
+  animation: markerPulse 0.6s ease-in-out;
+}
+
+@keyframes markerPulse {
+  0% {
+    transform: scale(1) translateY(0);
+  }
+  50% {
+    transform: scale(1.2) translateY(-8px);
+  }
+  100% {
+    transform: scale(1) translateY(0);
+  }
+}
+
+.marker-highlight .marker-dot {
+  box-shadow:
+    0 0 0 6px rgba(59, 130, 246, 0.25),
+    0 0 10px rgba(59, 130, 246, 0.6);
+}
+
+/* النقطة */
+.marker-dot {
+  width: 18px;
+  height: 18px;
+  border: 3px solid white;
+  box-shadow: 0 0 8px rgba(0,0,0,0.6);
+}
+
+/* مادي */
+.marker-dot.tangible {
+  background: #e53935;
+}
+
+/* لا مادي */
+.marker-dot.intangible {
+  background: #1e88e5;
+}
+
+/* الاسم */
+.marker-label {
+  margin-top: 6px;
+  background: rgba(255,255,255,0.95);
+  padding: 3px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #222;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+}
+
+/* 🔥 إلغاء أي ستايل من Leaflet */
+.leaflet-marker-icon,
+.leaflet-div-icon {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* wrapper */
+.marker-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* النقطة */
+.marker-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 3px solid white;
+  background: red;
+  box-shadow: 0 0 6px rgba(0,0,0,0.4);
+}
+
+/* مادي */
+.marker-dot.tangible {
+  background: #e53935;
+}
+
+/* لا مادي */
+.marker-dot.intangible {
+  background: #1e88e5;
+}
+
+/* الاسم */
+.marker-label {
+  margin-top: 6px;
+  background: rgba(255,255,255,0.95);
+  padding: 3px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #222;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
 }
