@@ -673,6 +673,7 @@ function extractImages(data) {
     .filter((p) => p.length > 0);
 }
 
+
 function renderGallery() {
   if (!panelGalleryEl || !panelGalleryTrackEl || !panelGalleryDotsEl) return;
   if (!panelImages.length) {
