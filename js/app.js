@@ -241,7 +241,7 @@ async function bootstrap() {
 
     showLoading(true);
     const loaded = await loadExcelData("./data/sample.xlsx");
-    const normalized = loaded.map((item) => ({ ...item, heritageType: classifyHeritageType(item.category) }));
+    const normalized = loaded.map((item) => ({ ...item}));
     if (!normalized.length) {
       notify("الملف محمل بنجاح، لكن لا توجد نقاط صالحة للعرض.", true, 4500);
       showLoading(false);
