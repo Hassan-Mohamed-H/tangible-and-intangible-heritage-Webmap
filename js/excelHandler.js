@@ -39,10 +39,19 @@ export async function loadExcelData(url) {
       const lng = toNumber(lngRaw);
       if (lat === null || lng === null) continue;
       if (lat < -90 || lat > 90 || lng < -180 || lng > 180) continue;
+      const heritageClass = String(
+        pickValue(row, ["تصنيف التراث"])
+      ).trim();
 
       cleaned.push({
         lat,
         lng,
+
+        heritageType:
+          heritageClass === "لامادي"
+            ? "intangible"
+            : "tangible",
+            
         category: String(
           pickValue(row, ["Category", "category","نوع التراث", "Type", "type", "الفئة", "تصنيف"]) || "غير مصنف"
         ),
