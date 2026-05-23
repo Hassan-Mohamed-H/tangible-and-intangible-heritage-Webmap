@@ -634,8 +634,9 @@ function buildSidePanelOverview(rowData, item) {
 }
 
 function buildSidePanelRows(rowData, item) {
+  const hiddenFields = ["Images", "Latitude", "خط العرض", "Longitude", "خط الطول", "lat", "lng", "image", "img", "photo", "photos", "picture", "pictures","Images_Link"];
   const rows = Object.keys(rowData)
-    .filter((key) => String(key).trim())
+    .filter((key) => String(key).trim() && !hiddenFields.includes(key))
     .map((key) => {
       const value = rowData[key];
       if (value === null || value === undefined || String(value).trim() === "") return "";
