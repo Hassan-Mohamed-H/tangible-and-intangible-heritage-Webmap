@@ -100,8 +100,21 @@ function applyCategoryFilters() {
 }
 
 function getSearchPool() {
-  const categoryFiltered = filterByCategories(state.allData, state.selectedCategories);
-  return filterByLayerVisibility(categoryFiltered, state.layerState.tangible, state.layerState.intangible);
+
+  const excelData =
+    filterByLayerVisibility(
+      filterByCategories(
+        state.allData,
+        state.selectedCategories
+      ),
+      state.layerState.tangible,
+      state.layerState.intangible
+    );
+
+  return [
+    ...excelData,
+    ...state.importedGeoJsonData
+  ];
 }
 
 function bindSearch() {
@@ -198,6 +211,32 @@ function bindGeoJsonTools() {
     try {
       const text = await file.text();
       const geojson = JSON.parse(text);
+      state.importedGeoJsonData =
+        geojson.features
+          .filter(
+            feature =>
+              feature.geometry &&
+              feature.geometry.type === "Point"
+          )
+          .map(feature => ({
+            name:
+              feature.properties?.name ||
+              feature.properties?.title ||
+              "عنصر مستورد",
+
+            category:
+              feature.properties?.category ||
+              "مستورد",
+
+            lat:
+              feature.geometry.coordinates[1],
+
+            lng:
+              feature.geometry.coordinates[0],
+
+            raw:
+              feature.properties || {}
+          }));
       renderImportedGeoJson(geojson, notify);
     } catch (error) {
       notify("فشل استيراد ملف GeoJSON. تأكد من صحة الملف.", true);
