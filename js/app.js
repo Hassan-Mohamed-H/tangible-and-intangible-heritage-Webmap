@@ -1,3 +1,17 @@
+function getPropertyValue(properties, keys) {
+  for (const key of keys) {
+    if (
+      properties[key] !== undefined &&
+      properties[key] !== null &&
+      String(properties[key]).trim() !== ""
+    ) {
+      return properties[key];
+    }
+  }
+  return null;
+}
+
+
 import {
   initMap,
   setMarkers,
@@ -103,22 +117,15 @@ function applyCategoryFilters() {
 
 function getSearchPool() {
 
-  const excelData =
-    filterByLayerVisibility(
-      filterByCategories(
-        state.allData,
-        state.selectedCategories
-      ),
-      state.layerState.tangible,
-      state.layerState.intangible
-    );
-
-  return [
-    ...excelData,
-    ...state.importedGeoJsonData
-  ];
+  return filterByLayerVisibility(
+    filterByCategories(
+      state.allData,
+      state.selectedCategories
+    ),
+    state.layerState.tangible,
+    state.layerState.intangible
+  );
 }
-
 function bindSearch() {
   const suggestDebounced = debounce(() => {
     const suggestions = getSuggestions(getSearchPool(), uiEls.searchInput.value || "");
@@ -213,32 +220,111 @@ function bindGeoJsonTools() {
     try {
       const text = await file.text();
       const geojson = JSON.parse(text);
-      state.importedGeoJsonData =
-        geojson.features
-          .filter(
-            feature =>
-              feature.geometry &&
-              feature.geometry.type === "Point"
-          )
-          .map(feature => ({
-            name:
-              feature.properties?.name ||
-              feature.properties?.title ||
-              "عنصر مستورد",
+      const importedItems = geojson.features
+        .filter(
+          feature =>
+            feature.geometry &&
+            feature.geometry.type === "Point"
+        )
+        .map(feature => {
 
-            category:
-              feature.properties?.category ||
-              "مستورد",
+          const props = feature.properties || {};
 
-            lat:
-              feature.geometry.coordinates[1],
+          const category = String(
+            getPropertyValue(props, [
+              "تصنيف التراث",
+              "نوع التراث",
+              "تصنيف",
+              "الفئة",
+              "Category",
+              "category",
+              "Type",
+              "type",
+              "Classification"
+            ]) || "غير مصنف"
+          );
 
-            lng:
-              feature.geometry.coordinates[0],
+          const heritageClassification = String(
+            getPropertyValue(props, [
+              "تصنيف التراث",
+              "HeritageType",
+              "heritageType"
+            ]) || ""
+          );
 
-            raw:
-              feature.properties || {}
-          }));
+          return {
+
+            lat: feature.geometry.coordinates[1],
+
+            lng: feature.geometry.coordinates[0],
+
+            name: String(
+              getPropertyValue(props, [
+                "الاسم",
+                "Name",
+                "name",
+                "Title",
+                "title"
+              ]) || "عنصر مستورد"
+            ),
+
+            category,
+
+            description: String(
+              getPropertyValue(props, [
+                "الوصف",
+                "Description",
+                "description",
+                "Details",
+                "details"
+              ]) || ""
+            ),
+
+            image: String(
+              getPropertyValue(props, [
+                "Images_Link",
+                "Image",
+                "image",
+                "Photo",
+                "photo",
+                "صورة",
+                "رابط الصورة"
+              ]) || ""
+            ),
+
+            heritageType:
+              heritageClassification.includes("لامادي")
+                ? "intangible"
+                : "tangible",
+
+            raw: props
+          };
+        });
+      state.allData.push(...importedItems);
+      const categories = getCategories(state.allData);
+
+      state.selectedCategories = new Set(categories);
+
+      renderCategoryFilters(
+        categories,
+        state.selectedCategories,
+        (category, isChecked) => {
+
+          if (isChecked)
+            state.selectedCategories.add(category);
+          else
+            state.selectedCategories.delete(category);
+
+          applyCategoryFilters();
+        }
+      );
+
+      updateFilteredData(
+        state,
+        [...state.allData]
+      );
+
+      refreshMapScheduled();
       renderImportedGeoJson(geojson, notify);
     } catch (error) {
       notify("فشل استيراد ملف GeoJSON. تأكد من صحة الملف.", true);

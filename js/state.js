@@ -4,8 +4,7 @@ export function createAppState() {
     filteredData: [],
     selectedCategories: new Set(),
     layerState: { tangible: true, intangible: true, heatmap: false },
-    spatialIndex: null,
-    importedGeoJsonData: []
+    spatialIndex: null
   };
 }
 
