@@ -99,6 +99,8 @@ function applyCategoryFilters() {
   refreshMapScheduled();
 }
 
+
+
 function getSearchPool() {
 
   const excelData =
